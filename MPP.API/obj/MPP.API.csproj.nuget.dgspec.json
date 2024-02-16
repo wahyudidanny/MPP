@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.API\\MPP.API.csproj": {}
+    "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.API\\MPP.API.csproj": {}
   },
   "projects": {
-    "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.API\\MPP.API.csproj": {
+    "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.API\\MPP.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.API\\MPP.API.csproj",
+        "projectUniqueName": "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.API\\MPP.API.csproj",
         "projectName": "MPP.API",
-        "projectPath": "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.API\\MPP.API.csproj",
+        "projectPath": "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.API\\MPP.API.csproj",
         "packagesPath": "C:\\Users\\danny.wahyudi\\.nuget\\packages\\",
-        "outputPath": "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.API\\obj\\",
+        "outputPath": "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

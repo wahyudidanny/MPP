@@ -12,6 +12,9 @@
     <PackageReference Include="Selenium.Chrome.WebDriver" Version="85.0.0" />
     <PackageReference Include="Selenium.WebDriver" Version="4.17.0" />
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="121.0.6167.8500" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
   </ItemGroup>
-
+	<ItemGroup>
+	  <ProjectReference Include="..\MPP.Service\MPP.Service.csproj" />
+	</ItemGroup>
 </Project>

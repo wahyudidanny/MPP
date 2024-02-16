@@ -1,17 +1,20 @@
-﻿using MPP.Job.Entities;
-using Microsoft.Extensions.Configuration;
-using OpenQA.Selenium.Chrome;
+﻿
 using OpenQA.Selenium;
+using MPP.Job.Entities;
+using MPP.Service.Setup;
+using MPP.Service.Interface;
+using OpenQA.Selenium.Chrome;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 public class Program
 {
 
-    private static AppSettings appSettings;
-    private static SettingWAChrome settingWAChrome;
-    static async Task Main(string[] args)
+    private static AppSettings? appSettings;
+    private static SettingWAChrome? settingWAChrome;
+    private static void Main(string[] args)
     {
 
-    
         var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
@@ -19,7 +22,44 @@ public class Program
         appSettings = new AppSettings(configuration);
         settingWAChrome = new SettingWAChrome(configuration);
 
-        await openChromeWhatshap();
+        var services = new ServiceCollection();
+        services.RegisterContext(configuration);
+        services.RegisterService(configuration);
+
+        var serviceProvider = services.BuildServiceProvider();
+        var _businessUnitService = serviceProvider.GetService<IDataService>();
+
+        var dataKebun = _businessUnitService?.GetDataBusinessUnit().ToList();
+
+
+
+              Console.WriteLine(dataKebun.Count());
+
+        if (appSettings.GetValue("flagGeneratePDF") == "1")
+        {
+
+                  Console.WriteLine("1");
+            foreach (var data in dataKebun)
+            {
+            //     try
+            //     {
+
+
+            //         GenerateImage(data.Company, data.Location, periodeDesc, data.RegionCode, data.KodeGroup);
+            //     }
+            //     catch (Exception err)
+            //     {
+            //         Log.Error($"{data.Company} {data.Location} {data.RegionCode} {data.KodeGroup}", "Error");
+            //         Log.Error(err, "Error");
+                  Console.WriteLine( data.Company + " _ "  + data.Location + "_" + data.RegionCode);
+            //     }
+            }
+
+        }
+
+
+
+        Console.WriteLine("hello world");
 
 
     }

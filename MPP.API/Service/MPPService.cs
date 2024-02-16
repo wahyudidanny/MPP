@@ -25,6 +25,7 @@ namespace MPP.API.Service
             {
 
 
+              
 
                 var document = new PdfDocument();
 
@@ -43,21 +44,20 @@ namespace MPP.API.Service
                         document.Save(ms);
                         var filename = "MPP_ " + company + "_" + location + ".pdf";
                         byte[] response = ms.ToArray();
-                        string fullPath = Path.Combine("C:\\AllProject\\Change Request\\2024\\MPP\\MPP.File", filename);
+                        string fullPath = Path.Combine(_appSettings.filePathRiau, filename);
                         File.WriteAllBytes(fullPath, response);
 
                     }
 
                     return true;
-
                 }
+
                 else
                 {
 
                     return false;
 
                 }
-
 
             }
             catch
@@ -66,7 +66,6 @@ namespace MPP.API.Service
                 return false;
 
             }
-
 
         }
 
