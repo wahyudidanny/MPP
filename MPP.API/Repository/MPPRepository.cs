@@ -12,7 +12,7 @@ namespace MPP.API.Repository
 			_context = context;
 		}
 
-        public async Task<IEnumerable<T_MsMPP?>> getAllDataApprovalMPP()
+        public async Task<IEnumerable<T_MsMPP?>> getAllDataApprovalMPP(string company, string location,string tahun, string bulan)
         {
 
             List<T_MsMPP> result = new List<T_MsMPP>();
@@ -21,7 +21,7 @@ namespace MPP.API.Repository
             {
                 _context.Database.SetCommandTimeout(300);
 
-                result = await _context.Set<T_MsMPP>().FromSqlRaw("EXECUTE Get_Data_ApprovalMPP_Email 'A06','21','2024','1' ").ToListAsync();
+                result = await _context.Set<T_MsMPP>().FromSqlRaw("EXECUTE Get_Data_ApprovalMPP_Email '" + company + "','"+ location+"','" + tahun +"','" + bulan + "'").ToListAsync();
 
                 return result;
 

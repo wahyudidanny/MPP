@@ -18,15 +18,18 @@ namespace MPP.API.Controllers
         [HttpGet("GenerateApprovalMPP")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> GenerateApprovalMPP()
+        public async Task<ActionResult> GenerateApprovalMPP(string company, string location,string tahun, string bulan)
         {
 
-            bool? generatePdf = await _MPPService.generateApprovalMPP();
+            bool? generatePdf = await _MPPService.generateApprovalMPP(company,  location, tahun,  bulan);
+
             if (generatePdf != null)
                 return Ok("Successfull Generate PDF");
             else
                 return NotFound("Generate PDF Failed!! Please Check Your Log");
+                
         }
+
     }
 
 }
