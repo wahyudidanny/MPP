@@ -13,7 +13,7 @@ namespace MPP.Service.Services
 
         public DataServices(IOptions<ConnectionStrings> connectionStrings)
         {
-          connectionString1 = connectionStrings.Value.DbConnectionString;
+            connectionString1 = connectionStrings.Value.DbConnectionString;
         }
 
         public IEnumerable<T_MsBusinessUnit> GetDataBusinessUnit()

@@ -11,7 +11,7 @@ namespace MPP.API.Entities
         public int? totalAktual { get; set; }
         public int? varianceOver { get; set; }
         public string? MasaBerlaku { get; set; }
-        public string? catatan { get; set; }
+        public int? EmailLevel { get; set; }
     }
 }
 

@@ -1,17 +1,24 @@
 ﻿
 using OpenQA.Selenium;
-using MPP.Job.Entities;
+using MPP.Service.Models;
 using MPP.Service.Setup;
 using MPP.Service.Interface;
 using OpenQA.Selenium.Chrome;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Net.Http;
+using Microsoft.Extensions.Http;
 
+using RestSharp;
 public class Program
 {
 
     private static AppSettings? appSettings;
     private static SettingWAChrome? settingWAChrome;
+
     private static void Main(string[] args)
     {
 
@@ -21,51 +28,88 @@ public class Program
 
         appSettings = new AppSettings(configuration);
         settingWAChrome = new SettingWAChrome(configuration);
-
+        
         var services = new ServiceCollection();
         services.RegisterContext(configuration);
         services.RegisterService(configuration);
+        services.AddHttpClient();
+
 
         var serviceProvider = services.BuildServiceProvider();
+        var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
         var _businessUnitService = serviceProvider.GetService<IDataService>();
 
         var dataKebun = _businessUnitService?.GetDataBusinessUnit().ToList();
 
-
-
-              Console.WriteLine(dataKebun.Count());
-
         if (appSettings.GetValue("flagGeneratePDF") == "1")
         {
 
-                  Console.WriteLine("1");
             foreach (var data in dataKebun)
             {
-            //     try
-            //     {
+                try
+                {
+                    GeneratePDF(data.Company, data.Location, "2024", "1",httpClientFactory);
+                   
+                }
+                catch (Exception err)
+                {
 
 
-            //         GenerateImage(data.Company, data.Location, periodeDesc, data.RegionCode, data.KodeGroup);
-            //     }
-            //     catch (Exception err)
-            //     {
-            //         Log.Error($"{data.Company} {data.Location} {data.RegionCode} {data.KodeGroup}", "Error");
-            //         Log.Error(err, "Error");
-                  Console.WriteLine( data.Company + " _ "  + data.Location + "_" + data.RegionCode);
-            //     }
+                }
             }
+
+        }
+
+        if (appSettings.GetValue("flagSendWA") == "1"){
+              openChromeWhatsap();
+
+
 
         }
 
 
 
-        Console.WriteLine("hello world");
+         
+
+    }
+
+        public static async Task<RestResponse> GetAsync(string url, string? jwtToken = "")
+        {
+                var client = new RestClient();
+                //client.Timeout = -1;
+                var request = new RestRequest(url, Method.Get);
+                request.AddHeader("Content-Type", "application/json");
+                if (!string.IsNullOrEmpty(jwtToken))
+                    request.AddHeader("Authorization", $"Bearer {jwtToken}");
+
+                return await client.ExecuteAsync(request);
+     
+        }
+
+    private async  static void GeneratePDF(string? company, string? location, string tahun, string bulan, IHttpClientFactory httpClientFactory)
+    {
+
+        string apiUrl = $"{settingWAChrome.apiBaseUrl}/api/MPP/GenerateApprovalMPP/?company={company}&location={location}&tahun={tahun}&bulan={bulan}";
+
+        using (var httpClient = httpClientFactory.CreateClient())
+        {
+              var response = await httpClient.GetAsync(apiUrl);
+
+          if (response.IsSuccessStatusCode)
+            {
+                    string responseBody = await response.Content.ReadAsStringAsync();
+
+            }
+        }
+
+
+             
 
 
     }
 
 
-    private static async Task openChromeWhatshap()
+    private static async Task openChromeWhatsap()
     {
 
         try
@@ -105,28 +149,26 @@ public class Program
 
         IWebElement searchBox = driver.FindElement(By.XPath(settingWAChrome.waSearchBox));
         searchBox.SendKeys(settingWAChrome.waRecipientGroup);
-        //driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys("In a few minutes you will recieved auto notification from *WhatsApp Automation System*"); //--> Element text message value
-        Console.WriteLine("1");
-        Thread.Sleep(3000); // Wait for the search results to load
-        Console.WriteLine("2");
-        driver.FindElement(By.XPath(string.Format(settingWAChrome.waSelectSearchResult ?? "", "VRA"))).Click();
 
+        Thread.Sleep(3000); 
+ 
+        driver.FindElement(By.XPath(string.Format(settingWAChrome.waSelectSearchResult ?? "", "VRA"))).Click();
 
         IWebElement attachmentButton = driver.FindElement(By.CssSelector(settingWAChrome.waAttachmentButton));
         attachmentButton.Click();
-        Thread.Sleep(2000); // Wait for the search results to load
+        Thread.Sleep(5000); 
+        
+        
+        string[] files = Directory.GetFiles(appSettings.GetValue("filePathRiau"));
 
-        string imageFullPath = Path.GetFullPath("C:\\AllProject\\Change Request\\2024\\MPP\\MPP.File\\dummytest.pdf");
-        IWebElement fileInput = driver.FindElement(By.CssSelector(settingWAChrome.waInputFileDefault));
-        fileInput.SendKeys(imageFullPath);
-        Thread.Sleep(2000); // Wait for the search results to load
-        Console.WriteLine("3");
+        foreach (string file in files)
+        {
+            IWebElement fileInput = driver.FindElement(By.CssSelector(settingWAChrome.waInputFileDefault));
+            fileInput.SendKeys(file);
+            driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessageImage)).SendKeys(Keys.Enter);
 
-        driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessageImage)).SendKeys(Keys.Enter);
+        }
 
-        Thread.Sleep(10000);
-
-        Console.WriteLine("4");
 
     }
 

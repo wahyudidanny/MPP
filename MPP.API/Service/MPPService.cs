@@ -25,7 +25,6 @@ namespace MPP.API.Service
             {
 
 
-              
 
                 var document = new PdfDocument();
 
@@ -44,20 +43,21 @@ namespace MPP.API.Service
                         document.Save(ms);
                         var filename = "MPP_ " + company + "_" + location + ".pdf";
                         byte[] response = ms.ToArray();
-                        string fullPath = Path.Combine(_appSettings.filePathRiau, filename);
+                        string fullPath = Path.Combine("C:\\AllProject\\Change Request\\2024\\MPP\\MPP.File\\PDF\\Riau", filename);
                         File.WriteAllBytes(fullPath, response);
 
                     }
 
                     return true;
-                }
 
+                }
                 else
                 {
 
                     return false;
 
                 }
+
 
             }
             catch
@@ -66,6 +66,7 @@ namespace MPP.API.Service
                 return false;
 
             }
+
 
         }
 
@@ -77,7 +78,7 @@ namespace MPP.API.Service
         }
 
 
-        private string SetTableMPP(IEnumerable<T_MsMPP?> contentPDF)
+         private string SetTableMPP(IEnumerable<T_MsMPP?> contentPDF)
         {
 
             string htmlcontent = "<div style='margin-top:-27px; padding-top:10px;'>";
@@ -89,55 +90,69 @@ namespace MPP.API.Service
 
             htmlcontent += "<div style='text-align: center;'>";
             htmlcontent += "<table style='border: 0.75px solid black; border-collapse: collapse; width: 90%;margin-left:25px;'>";
-            htmlcontent += "<tr><td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:white;' colspan=7>" + setSpanValue("MONITORING MPP REGION RIAU FR ", bold: "bold") + "</td></tr>";
+              htmlcontent += "<tr><td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:white;' colspan=6>" + setSpanValue("MONITORING MPP REGION RIAU FR ", bold: "bold") + "</td></tr>";
 
             htmlcontent += "<tr><td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;' rowspan=2>" + setSpanValue("No", "white") + "</td>";
             htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;' colspan=2>" + setSpanValue("Bisnis Unit", "white") + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;' colspan=3>" + setSpanValue("Tenaga Kerja", "white") + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;' colspan=3>" + setSpanValue("Approval COO", "white") + "</td></tr>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;' colspan=2>" + setSpanValue("Tenaga Kerja", "white") + "</td></tr>";
 
             htmlcontent += "<tr><td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;'>" + setSpanValue("Budget TK", "white") + "</td>";
             htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;'>" + setSpanValue("Aktual TK", "white") + "</td>";
             htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;'>" + setSpanValue("Variance over", "white") + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;'>" + setSpanValue("Masa Berlaku", "white") + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;'>" + setSpanValue("Catatan", "white") + "</td></tr>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;'>" + setSpanValue("Masa Berlaku", "white") + "</td></tr>";
 
             int totalAktual = 0;
             int totalBdgt = 0;
             int totalVariance = 0;
+            bool createColumn = true ; 
 
-            foreach (var dataResponse in contentPDF)
-            {
 
-                htmlcontent += "<tr>";
+             foreach (var dataResponse in contentPDF)
+             {
 
-                foreach (var property in typeof(T_MsMPP).GetProperties())
-                {
+              htmlcontent += "<tr>";
 
-                    object? value = property.GetValue(dataResponse);
+               foreach (var property in typeof(T_MsMPP).GetProperties())
+              {
 
-                    if (property.Name.ToLower().Contains("aktual"))
+                  object? value = property.GetValue(dataResponse);
+
+                    if (property.Name.ToLower().Contains("Aktual"))
                     {
 
                         totalAktual += totalAktual + Convert.ToInt32(value);
 
                     }
-                    else if (property.Name.ToLower().Contains("bdgt"))
+                    else if (property.Name.ToLower().Contains("totalBdgt"))
                     {
 
                         totalBdgt += totalBdgt + Convert.ToInt32(value);
                     }
-                    else if (property.Name.Contains("variance"))
+                    else if (property.Name.Contains("varianceOver"))
                     {
 
                         totalVariance += totalVariance + Convert.ToInt32(value);
                     }
+                     else if (property.Name.Contains("EmailLevel") || property.Name.Contains("MasaBerlaku"))
+                    {
 
-                    htmlcontent += "<td style='padding: 0; margin: 0; font-size:10px; border: 1px solid black; height: 15px; border-collapse: collapse;'>" + value + "</td>";
+                        createColumn = false ;
+                    }
 
-                }
+                    if  (createColumn != false) {
 
-                htmlcontent += "</tr>";
+                        htmlcontent += "<td style='padding: 0; margin: 0; font-size:10px; border: 1px solid black; height: 15px; border-collapse: collapse;'>" + value + "</td>";
+
+                    }else{
+
+                            createColumn = true ;
+
+                    }
+                    
+                 
+             }
+
+              htmlcontent += "</tr>";
 
             }
 
