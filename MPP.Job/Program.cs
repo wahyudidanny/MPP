@@ -163,7 +163,7 @@ public class Program
             IWebElement fileInput = driver.FindElement(By.CssSelector(settingWAChrome.waInputFileDefault));
             fileInput.SendKeys(file);
             driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessageImage)).SendKeys(Keys.Enter);
-
+            Thread.Sleep(5000);
         }
 
 

@@ -1,0 +1,12 @@
+C:\AllProject\Change Request\2024\MPP\MPP.Service\bin\Debug\net6.0\MPP.Service.deps.json
+C:\AllProject\Change Request\2024\MPP\MPP.Service\bin\Debug\net6.0\MPP.Service.dll
+C:\AllProject\Change Request\2024\MPP\MPP.Service\bin\Debug\net6.0\MPP.Service.pdb
+C:\AllProject\Change Request\2024\MPP\MPP.Service\obj\Debug\net6.0\MPP.Service.csproj.AssemblyReference.cache
+C:\AllProject\Change Request\2024\MPP\MPP.Service\obj\Debug\net6.0\MPP.Service.GeneratedMSBuildEditorConfig.editorconfig
+C:\AllProject\Change Request\2024\MPP\MPP.Service\obj\Debug\net6.0\MPP.Service.AssemblyInfoInputs.cache
+C:\AllProject\Change Request\2024\MPP\MPP.Service\obj\Debug\net6.0\MPP.Service.AssemblyInfo.cs
+C:\AllProject\Change Request\2024\MPP\MPP.Service\obj\Debug\net6.0\MPP.Service.csproj.CoreCompileInputs.cache
+C:\AllProject\Change Request\2024\MPP\MPP.Service\obj\Debug\net6.0\MPP.Service.dll
+C:\AllProject\Change Request\2024\MPP\MPP.Service\obj\Debug\net6.0\refint\MPP.Service.dll
+C:\AllProject\Change Request\2024\MPP\MPP.Service\obj\Debug\net6.0\MPP.Service.pdb
+C:\AllProject\Change Request\2024\MPP\MPP.Service\obj\Debug\net6.0\ref\MPP.Service.dll
