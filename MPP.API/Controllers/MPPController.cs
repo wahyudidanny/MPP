@@ -23,10 +23,10 @@ namespace MPP.API.Controllers
 
             bool? generatePdf = await _MPPService.generateApprovalMPP(company,  location, kodeRegion, tahun,  bulan);
 
-            if (generatePdf != null)
+            if (generatePdf == true)
                 return Ok("Successfull Generate PDF");
             else
-                return NotFound("Generate PDF Failed!! Please Check Your Log");
+                return NotFound("Generate PDF Failed!! Please Check Your Data");
                 
         }
 

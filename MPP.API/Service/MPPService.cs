@@ -27,11 +27,12 @@ namespace MPP.API.Service
                 var document = new PdfDocument();
 
                 var contentPdf = await _MPPRepository.getAllDataApprovalMPP(company, location, tahun, bulan);
+                var contentPdfDetail = await _MPPRepository.getAllDataDetailApprovalMPP(company, location, tahun, bulan);
 
-                if (contentPdf != null)
+                if (contentPdf.Count() > 0 || contentPdfDetail.Count() > 0)
                 {
+                    string htmlcontent = SetTableMPP(contentPdf, contentPdfDetail, kodeRegion);
 
-                    string htmlcontent = SetTableMPP(contentPdf, kodeRegion);
 
                     PdfGenerator.AddPdfPages(document, htmlcontent, PageSize.A4);
 
@@ -79,25 +80,40 @@ namespace MPP.API.Service
             string results = "";
 
             if (colspan > 0)
-                results = "<td style='padding: 0; margin: 0;border: 1px solid black;height: " + height.ToString() + "px;width=" + width.ToString() + "px; border-collapse: collapse;background-color:" + backgroundColor + ";' colspan=" + colspan.ToString() + ">" + valSpan+ "</td>";
+                results = "<td style='padding: 0; margin: 0;border: 1px solid black;height: " + height.ToString() + "px;width=" + width.ToString() + "px; border-collapse: collapse;background-color:" + backgroundColor + ";' colspan=" + colspan.ToString() + ">" + valSpan + "</td>";
             else if (rowspan > 0)
                 results = "<td style='padding: 0; margin: 0;border: 1px solid black;height: " + height.ToString() + "px;width=" + width.ToString() + "px; border-collapse: collapse;background-color:" + backgroundColor + ";' rowspan=" + rowspan.ToString() + ">" + valSpan + "</td>";
-         
+
             return results;
 
         }
 
 
-        private string SetTableMPP(IEnumerable<T_MsMPP?> contentPDF, string kodeRegion)
+
+        public string setNormalColumTable(string valSpan, int height = 12, int colspan = 0, int rowspan = 0, string backgroundColor = "white", int width = 12)
         {
+
+            string results = "";
+
+            results = "<td style='padding: 0; margin: 0;border: 1px solid black;height: " + height.ToString() + "px;width=" + width.ToString() + "px; border-collapse: collapse;background-color:" + backgroundColor + ";'>" + valSpan + "</td>";
+
+            return results;
+
+        }
+
+
+        private string SetTableMPP(IEnumerable<T_MsMPP?> contentPDF, IEnumerable<T_MsMPPDetail?> contentPDFDetail, string kodeRegion)
+        {
+
+            string catatan = contentPDF.FirstOrDefault().catatan;
 
             string htmlcontent = "<div style='margin-top:-20px; padding-top:50px;'>";
             htmlcontent += setSpanValue("Yth") + "<br>";
-            htmlcontent += setSpanValue("Bapak  Pimpinan Kebun", bold: "bold") + "<br>";
-            htmlcontent += setSpanValue("Mohon segera dilakukan pengurangan tenaga kerja atau pembaharuan persetujuan over TK pada PT berikut:") + "<br>";
+            htmlcontent += setSpanValue("Bapak  Pimpinan Kebun " + contentPDF.FirstOrDefault().state.ToString(), bold: "bold") + "<br>";
+            htmlcontent += setSpanValue("Mohon persetujuan penambahan kelebihan tenaga kerja dengan rincian sebagai berikut:") + "<br>";
             htmlcontent += "</div>";
 
-            htmlcontent += "<div style='text-align: center;'>";
+            htmlcontent += "<div style='text-align: center;'><br>";
             htmlcontent += "<table style='border: 0.75px solid black; border-collapse: collapse; width: 90%;margin-left:25px;'>";
 
             htmlcontent += "<tr>";
@@ -105,82 +121,72 @@ namespace MPP.API.Service
             htmlcontent += "</tr>";
 
             htmlcontent += "<tr>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:5px;background-color:#2E6443;' rowspan=2>" + setSpanValue("No", "white") + "</td>";
-            //htmlcontent += setColumTable(setSpanValue("Business Unit", "white"), rowspan: 2, backgroundColor: "#2E6443");
-            htmlcontent += setColumTable(setSpanValue("Business Unit", "white"), rowspan: 2, backgroundColor: "#2E6443", width: 25);
-            htmlcontent += setColumTable(setSpanValue("STD COO", "white"), rowspan: 2, backgroundColor: "#2E6443");
-            htmlcontent += setColumTable(setSpanValue("Tenaga Kerja", "white"), colspan: 2, backgroundColor: "#2E6443");
-            htmlcontent += setColumTable(setSpanValue("Variance", "white"), colspan: 2, backgroundColor: "#2E6443");
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:#2E6443;' rowspan=2>" + setSpanValue("No Pengajuan", "white") + "</td>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:#2E6443;' rowspan=2>" + setSpanValue("Business Unit Name", "white") + "</td>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:#2E6443;' rowspan=2>" + setSpanValue("STD COO", "white") + "</td>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:#2E6443;' colspan=2>" + setSpanValue("Tenaga Kerja", "white") + "</td>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:#2E6443;' colspan=2>" + setSpanValue("Variance", "white") + "</td>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:#2E6443;' rowspan=2>" + setSpanValue("Bulan Berlaku", "white") + "</td>";
             htmlcontent += "</tr>";
 
             htmlcontent += "<tr>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;'>" + setSpanValue("Budget TK", "white") + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;'>" + setSpanValue("Aktual TK", "white") + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;'>" + setSpanValue("Budget vs COO", "white") + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:#2E6443;'>" + setSpanValue("Aktual vs COO", "white") + "</td>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:#2E6443;'>" + setSpanValue("Budget TK", "white") + "</td>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:#2E6443;'>" + setSpanValue("Aktual TK", "white") + "</td>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:#2E6443;'>" + setSpanValue("Aktual TK VS Budget", "white") + "</td>";
+            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;background-color:#2E6443;'>" + setSpanValue("Aktual VS COO", "white") + "</td>";
             htmlcontent += "</tr>";
 
-
-
-            // htmlcontent += "<tr>";
-            // htmlcontent += setColumTable(setSpanValue("Budget TK", "white"), backgroundColor: "#2E6443");
-            // htmlcontent += setColumTable(setSpanValue("Aktual TK", "white"), backgroundColor: "#2E6443");
-            // htmlcontent += setColumTable(setSpanValue("Variance over", "white"), backgroundColor: "#2E6443");
-            // htmlcontent += "</tr>";
-
-
-
-            int totalAktual = 0;
-            int totalBdgt = 0;
-            int totalCOO = 0;
-            int totalVarianceBudgetCOO = 0;
-            int totalVarianceAktualCOO = 0;
             bool createColumn = true;
 
 
-            foreach (var dataResponse in contentPDF)
+            foreach (var dataResponseDetail in contentPDFDetail)
             {
 
-                htmlcontent += "<tr>";
+                string monthNameDetail = dataResponseDetail.BulanPriodeName;
 
-                foreach (var property in typeof(T_MsMPP).GetProperties())
+                foreach (var dataResponse in contentPDF)
                 {
 
-                    object? value = property.GetValue(dataResponse);
+                    htmlcontent += "<tr>";
 
-                    if (property.Name.ToLower().Contains("aktual"))
-                        totalAktual += totalAktual + Convert.ToInt32(value);
-                    else if (property.Name.ToLower().Contains("totalCOO"))
-                        totalCOO += totalCOO + Convert.ToInt32(value);
-                    else if (property.Name.ToLower().Contains("bdgt"))
-                        totalBdgt += totalBdgt + Convert.ToInt32(value);
-                    else if (property.Name.Contains("varianceBudget"))
-                        totalVarianceBudgetCOO += totalVarianceBudgetCOO + Convert.ToInt32(value);
-                    else if (property.Name.Contains("varianceAktual"))
-                        totalVarianceAktualCOO += totalVarianceAktualCOO + Convert.ToInt32(value);
-                    else if (property.Name.Contains("EmailLevel") || property.Name.Contains("MasaBerlaku"))
-                        createColumn = false;
+                    foreach (var property in typeof(T_MsMPP).GetProperties())
+                    {
 
-                    if (createColumn != false)
-                        htmlcontent += "<td style='padding: 0; margin: 0; font-size:10px; border: 1px solid black; height: 15px; border-collapse: collapse;'>" + value + "</td>";
-                    else
+                        object? value = property.GetValue(dataResponse);
+
+                        if (property.Name.ToLower() == "emaillevel" || property.Name.ToLower() == "state" || property.Name.ToLower() == "finalstate" || property.Name.ToLower() == "catatan" || property.Name.ToLower() == "masaberlakuint")
+                        {
+                            createColumn = false;
+                        }
+
+                        if (createColumn == true)
+                        {
+                            
+                             if (property.Name.ToLower() == "masaberlakuto"){
+
+                                  htmlcontent += "<td style='padding: 0; margin: 0; font-size:10px; border: 1px solid black; height: 15px;text-align:center; border-collapse: collapse;'>" + monthNameDetail.ToString() + "</td>";
+
+                             }else{
+
+                                  htmlcontent += "<td style='padding: 0; margin: 0; font-size:10px; border: 1px solid black; height: 15px;text-align:center; border-collapse: collapse;'>" + value.ToString() + "</td>";
+                       
+                             }
+
+                          
+                        }
                         createColumn = true;
 
+                    }
+                    htmlcontent += "</tr>";
+
                 }
-
-                htmlcontent += "</tr>";
-
             }
 
             htmlcontent += "<tr>";
-            htmlcontent += setColumTable(setSpanValue("Total"), colspan: 2);
-           //  htmlcontent += setColumTable(setSpanValue(totalCOO.ToString()));
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:white;'>" + setSpanValue(totalCOO.ToString()) + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:white;'>" + setSpanValue(totalBdgt.ToString()) + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:white;'>" + setSpanValue(totalAktual.ToString()) + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:white;'>" + setSpanValue(totalVarianceBudgetCOO.ToString()) + "</td>";
-            htmlcontent += "<td style='padding: 0; margin: 0;border: 1px solid black;height: 12px; border-collapse: collapse;width:10px;background-color:white;'>" + setSpanValue(totalVarianceAktualCOO.ToString()) + "</td>";
+            htmlcontent += setColumTable(setSpanValue("Catatan"), colspan: 2);
+            htmlcontent += setColumTable(setSpanValue(catatan.ToString()), colspan: 6);
             htmlcontent += "</tr>";
+
             htmlcontent += "</table>";
             htmlcontent += "</div>";
 

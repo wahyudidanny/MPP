@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Job\\MPP.Job.csproj": {}
+    "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Job\\MPP.Job.csproj": {}
   },
   "projects": {
-    "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Job\\MPP.Job.csproj": {
+    "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Job\\MPP.Job.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Job\\MPP.Job.csproj",
+        "projectUniqueName": "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Job\\MPP.Job.csproj",
         "projectName": "MPP.Job",
-        "projectPath": "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Job\\MPP.Job.csproj",
+        "projectPath": "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Job\\MPP.Job.csproj",
         "packagesPath": "C:\\Users\\danny.wahyudi\\.nuget\\packages\\",
-        "outputPath": "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Job\\obj\\",
+        "outputPath": "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Job\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -29,8 +29,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\MPP.Service.csproj": {
-                "projectPath": "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\MPP.Service.csproj"
+              "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\MPP.Service.csproj": {
+                "projectPath": "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\MPP.Service.csproj"
               }
             }
           }
@@ -112,14 +112,14 @@
         }
       }
     },
-    "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\MPP.Service.csproj": {
+    "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\MPP.Service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\MPP.Service.csproj",
+        "projectUniqueName": "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\MPP.Service.csproj",
         "projectName": "MPP.Service",
-        "projectPath": "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\MPP.Service.csproj",
+        "projectPath": "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\MPP.Service.csproj",
         "packagesPath": "C:\\Users\\danny.wahyudi\\.nuget\\packages\\",
-        "outputPath": "c:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\obj\\",
+        "outputPath": "C:\\AllProject\\Change Request\\2024\\MPP\\MPP.Service\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
