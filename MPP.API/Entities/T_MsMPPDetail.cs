@@ -11,8 +11,8 @@ namespace MPP.API.Entities
         public int? TahunPriode { get; set; }
         public int? BulanPriodeTo { get; set; }
         public string? BulanPriodeName { get; set; }
-        public string state { get; set; }
-        public string FinalState { get; set; }
+        public string? state { get; set; }
+        public string? FinalState { get; set; }
 
     }
 }

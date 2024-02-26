@@ -26,8 +26,8 @@ namespace MPP.API.Service
 
                 var document = new PdfDocument();
 
-                var contentPdf = await _MPPRepository.getAllDataApprovalMPP(company, location, tahun, bulan);
-                var contentPdfDetail = await _MPPRepository.getAllDataDetailApprovalMPP(company, location, tahun, bulan);
+                var contentPdf = await _MPPRepository.getAllDataApprovalMPP(company, location,kodeRegion, tahun, bulan);
+                var contentPdfDetail = await _MPPRepository.getAllDataDetailApprovalMPP(company, location,kodeRegion, tahun, bulan);
 
                 if (contentPdf.Count() > 0 || contentPdfDetail.Count() > 0)
                 {

@@ -1,5 +1,5 @@
 
-namespace MPP.Service.Models
+namespace MPP.API.Entities
 {
     public class ConnectionStrings
     {
@@ -10,5 +10,6 @@ namespace MPP.Service.Models
         public string? DbConnectionString5 { get; set; }
         public string? DbConnectionString6 { get; set; }
         public string? DbConnectionString7 { get; set; }
+
     }
 }

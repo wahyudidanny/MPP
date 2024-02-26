@@ -1,4 +1,3 @@
-
 using MPP.Service.Models;
 using MPP.Service.Interface;
 using Microsoft.Extensions.Options;
@@ -32,71 +31,71 @@ namespace MPP.Service.Services
         {
             List<T_MsBusinessUnit> result = new List<T_MsBusinessUnit>();
 
-            // using (var connection = new SqlConnection(connectionString1))
-            // {
-            //     var data = connection.Query<T_MsBusinessUnit>("select Company,Location,Description,'PTK' RegionCode, 'FR' KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'PTK' and KodeGroup = 'FR'");
-            //     if (data.Count() > 0)
-            //     {
-            //         result.AddRange(data);
-            //     }
-            // }
+            using (var connection = new SqlConnection(connectionString1))
+            {
+                var data = connection.Query<T_MsBusinessUnit>("select Company,Location,Description,'PTK' RegionCode, 'FR' KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'PTK' and KodeGroup = 'FR'");
+                if (data.Count() > 0)
+                {
+                    result.AddRange(data);
+                }
+            }
 
-            // using (var connection = new SqlConnection(connectionString2))
-            // {
-            //     var data = connection.Query<T_MsBusinessUnit>("select Company,Location,Description,'PTK' RegionCode, 'KAS' KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'PTK' and KodeGroup = 'KAS'");
-            //     if (data.Count() > 0)
-            //     {
-            //         result.AddRange(data);
-            //     }
-            // }
+            using (var connection = new SqlConnection(connectionString2))
+            {
+                var data = connection.Query<T_MsBusinessUnit>("select Company,Location,Description,'PTK' RegionCode, 'KAS' KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'PTK' and KodeGroup = 'KAS'");
+                if (data.Count() > 0)
+                {
+                    result.AddRange(data);
+                }
+            }
 
-            // using (var connection = new SqlConnection(connectionString3))
-            // {
-            //     string query = @"
-            //         select Company,Location,Description, RegionCode, KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'NNK' and KodeGroup = 'FAP'
-            //         and Company+Location not in ('C0126','C0127')";
-            //     var data = connection.Query<T_MsBusinessUnit>(query);
-            //     if (data.Count() > 0)
-            //     {
-            //         result.AddRange(data);
-            //     }
-            // }
+            using (var connection = new SqlConnection(connectionString3))
+            {
+                string query = @"
+                    select Company,Location,Description, RegionCode, KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'NNK' and KodeGroup = 'FAP'
+                    and Company+Location not in ('C0126','C0127')";
+                var data = connection.Query<T_MsBusinessUnit>(query);
+                if (data.Count() > 0)
+                {
+                    result.AddRange(data);
+                }
+            }
 
-            // using (var connection = new SqlConnection(connectionString4))
-            // {
-            //     string query = @"
-            //         select Company,Location,Description, RegionCode, KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'BPN' and KodeGroup = 'FR'
-            //         and Company+Location not in ('C1221','C1321','A1422')";
-            //     var data = connection.Query<T_MsBusinessUnit>(query);
-            //     if (data.Count() > 0)
-            //     {
-            //         result.AddRange(data);
-            //     }
-            // }
+            using (var connection = new SqlConnection(connectionString4))
+            {
+                string query = @"
+                    select Company,Location,Description, RegionCode, KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'BPN' and KodeGroup = 'FR'
+                    and Company+Location not in ('C1221','C1321','A1422')";
+                var data = connection.Query<T_MsBusinessUnit>(query);
+                if (data.Count() > 0)
+                {
+                    result.AddRange(data);
+                }
+            }
 
-            // using (var connection = new SqlConnection(connectionString5))
-            // {
-            //     string query = @"
-            //         select Company,Location,Description, RegionCode, KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'BPN' and KodeGroup = 'FAP'
-            //         and Company+Location not in ('C1921','C1922')";
-            //     var data = connection.Query<T_MsBusinessUnit>(query);
-            //     if (data.Count() > 0)
-            //     {
-            //         result.AddRange(data);
-            //     }
-            // }
+            using (var connection = new SqlConnection(connectionString5))
+            {
+                string query = @"
+                    select Company,Location,Description, RegionCode, KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'BPN' and KodeGroup = 'FAP'
+                    and Company+Location not in ('C1921','C1922')";
+                var data = connection.Query<T_MsBusinessUnit>(query);
+                if (data.Count() > 0)
+                {
+                    result.AddRange(data);
+                }
+            }
 
-            // using (var connection = new SqlConnection(connectionString6))
-            // {
-            //     string query = @"
-            //         select Company,Location,Description, RegionCode, KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'BPN' and KodeGroup = 'KAS'
-            //         and Company+Location not in ('C2821')";
-            //     var data = connection.Query<T_MsBusinessUnit>(query);
-            //     if (data.Count() > 0)
-            //     {
-            //         result.AddRange(data);
-            //     }
-            // }
+            using (var connection = new SqlConnection(connectionString6))
+            {
+                string query = @"
+                    select Company,Location,Description, RegionCode, KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'BPN' and KodeGroup = 'KAS'
+                    and Company+Location not in ('C2821')";
+                var data = connection.Query<T_MsBusinessUnit>(query);
+                if (data.Count() > 0)
+                {
+                    result.AddRange(data);
+                }
+            }
 
             using (var connection = new SqlConnection(connectionString7))
             {

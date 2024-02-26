@@ -6,11 +6,6 @@ using MPP.Service.Interface;
 using OpenQA.Selenium.Chrome;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System.Net.Http;
-using Microsoft.Extensions.Http;
 
 using RestSharp;
 public class Program
@@ -19,7 +14,7 @@ public class Program
     private static AppSettings? appSettings;
     private static SettingWAChrome? settingWAChrome;
 
-    private static void Main(string[] args)
+    static async Task Main(string[] args)
     {
 
         var configuration = new ConfigurationBuilder()
@@ -34,85 +29,88 @@ public class Program
         services.RegisterService(configuration);
         services.AddHttpClient();
 
-
         var serviceProvider = services.BuildServiceProvider();
         var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
         var _businessUnitService = serviceProvider.GetService<IDataService>();
 
-        var dataKebun = _businessUnitService?.GetDataBusinessUnit().ToList();
+        var yearGenerate = DateTime.Now.Year.ToString();
+        var monthGenerate = DateTime.Now.Month.ToString();
 
-        if (appSettings.GetValue("flagGeneratePDF") == "1")
+        var msBusinessUnit = _businessUnitService?.GetDataBusinessUnit().ToList() ?? new List<T_MsBusinessUnit>();
+        
+
+        if (msBusinessUnit.Count() > 0)
         {
 
-            foreach (var data in dataKebun)
+            if (appSettings.GetValue("flagGeneratePDF") == "1")
             {
-                try
+
+                foreach (var data in msBusinessUnit)
                 {
-                    GeneratePDF(data.Company, data.Location, "2024", "1", httpClientFactory);
+                    try
+                    {
+                        await GeneratePDF(data.Company, data.Location, yearGenerate, monthGenerate, data.KodeGroup, httpClientFactory);
 
+                    }
+                    catch (Exception err)
+                    {
+
+                        Console.WriteLine(err.ToString());
+
+                    }
                 }
-                catch (Exception err)
-                {
 
-
-                }
             }
 
+        }else{
+
+                Console.WriteLine("Data business unit is empty, please check your script");
+
         }
+
 
         if (appSettings.GetValue("flagSendWA") == "1")
         {
-            openChromeWhatsap();
-
-
+            await openChromeWhatsap();
 
         }
 
-
-
-
-
     }
 
-    public static async Task<RestResponse> GetAsync(string url, string? jwtToken = "")
-    {
-        var client = new RestClient();
-        //client.Timeout = -1;
-        var request = new RestRequest(url, Method.Get);
-        request.AddHeader("Content-Type", "application/json");
-        if (!string.IsNullOrEmpty(jwtToken))
-            request.AddHeader("Authorization", $"Bearer {jwtToken}");
 
-        return await client.ExecuteAsync(request);
 
-    }
-
-    private async static void GeneratePDF(string? company, string? location, string tahun, string bulan, IHttpClientFactory httpClientFactory)
+    static async Task GeneratePDF(string? company, string? location, string tahun, string bulan, string? kodeRegion, IHttpClientFactory? httpClientFactory)
     {
 
-        string apiUrl = $"{settingWAChrome.apiBaseUrl}/api/MPP/GenerateApprovalMPP/?company={company}&location={location}&tahun={tahun}&bulan={bulan}";
-
-        using (var httpClient = httpClientFactory.CreateClient())
-        {
-            var response = await httpClient.GetAsync(apiUrl);
-
-            if (response.IsSuccessStatusCode)
+        try
             {
-                string responseBody = await response.Content.ReadAsStringAsync();
+            string apiUrl = $"{settingWAChrome.apiBaseUrl}/api/MPP/GenerateApprovalMPP/?company={company}&location={location}&kodeRegion={kodeRegion}&tahun={tahun}&bulan={bulan}";
+
+            using (HttpClient client = new HttpClient())
+            {
+
+                HttpResponseMessage response = await client.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("Response from API:" + responseContent);
+
+                }
 
             }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Response from API:" + e.ToString());
         }
 
-
-
-
-
     }
-
 
     private static async Task openChromeWhatsap()
     {
-
 
         string ChromeUserData = settingWAChrome.chromeUserData;
 
