@@ -49,7 +49,7 @@ public class Program
                 {
                     try
                     {
-                        await GeneratePDF(data.Company, data.Location, yearGenerate, monthGenerate, data.KodeGroup, httpClientFactory);
+                        await GeneratePDF(data.Company, data.Location, yearGenerate, monthGenerate, data.RegionCode, httpClientFactory);
 
                     }
                     catch (Exception err)

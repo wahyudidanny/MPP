@@ -33,7 +33,6 @@ namespace MPP.API.Service
                 {
                     string htmlcontent = SetTableMPP(contentPdf, contentPdfDetail, kodeRegion);
 
-
                     PdfGenerator.AddPdfPages(document, htmlcontent, PageSize.A4);
 
                     using (MemoryStream ms = new MemoryStream())
