@@ -15,13 +15,15 @@ namespace MPP.API.Repository
         {
 
             // services.Configure<ConnectionStrings>(configuration.GetSection("ConnectionStrings"));  
-
             // var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             // builder.Services.AddDbContext<MPPDBContext>(options => options.UseSqlServer(connectionString));
 
             builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection("ConnectionStrings"));  
+            builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));  
             builder.Services.AddMemoryCache();
             builder.Services.AddScoped<MPPService>();
+
+       
 
         }
     }

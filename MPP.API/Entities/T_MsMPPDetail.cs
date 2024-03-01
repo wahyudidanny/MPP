@@ -5,7 +5,7 @@ namespace MPP.API.Entities
      [Keyless]
     public class T_MsMPPDetail
     {
-        public int? noPengajuan { get; set; }
+        public Int64? noPengajuan { get; set; }
         public string? company { get; set; }
         public string? location { get; set; }
         public int? TahunPriode { get; set; }

@@ -16,29 +16,63 @@ namespace MPP.API.Repository
         private readonly string? _connectionString5;
         private readonly string? _connectionString6;
         private readonly string? _connectionString7;
+        
+             
+        private static AppSettings? _appSettings;
 
-        public MPPRepository(IOptions<ConnectionStrings> connectionStrings)
+        public MPPRepository(IOptions<ConnectionStrings> connectionStrings, IOptions<AppSettings> appSettings)
         {
 
-            _connectionString = connectionStrings.Value.DbConnectionString;
-            _connectionString2 = connectionStrings.Value.DbConnectionString2;
+            _connectionString = connectionStrings.Value.DbConnectionString; //riau 
+            _connectionString2 = connectionStrings.Value.DbConnectionString2; // kalnar
             _connectionString3 = connectionStrings.Value.DbConnectionString3;
-            _connectionString4 = connectionStrings.Value.DbConnectionString4;
+            _connectionString4 = connectionStrings.Value.DbConnectionString4; // kaltim
             _connectionString5 = connectionStrings.Value.DbConnectionString5;
             _connectionString6 = connectionStrings.Value.DbConnectionString6;
             _connectionString7 = connectionStrings.Value.DbConnectionString7;
-
+            _appSettings = appSettings.Value;   
         }
+
+
+          public string getFilePathRegionCode(string kodeRegion)
+        {
+            string filePath = string.Empty;
+
+            if (kodeRegion.ToLower() == "pku")
+            {
+                filePath = _appSettings.filePathRiau;
+            }
+            else if (kodeRegion.ToLower() == "ptk")
+            {
+                filePath = _appSettings.filePathKalbar;
+
+            }
+            else if (kodeRegion.ToLower() == "bpn")
+            {
+                filePath = _appSettings.filePathKaltimFR;
+            }
+                return filePath;
+         }
+
 
         public string getConnectionString(string kodeRegion)
         {
             string connectionStrings = string.Empty;
 
-            if (kodeRegion == "PKU")
+            if (kodeRegion.ToLower() == "pku")
             {
                 connectionStrings = _connectionString;
+            }
+            else if (kodeRegion.ToLower() == "ptk")
+            {
+                connectionStrings = _connectionString2;
 
             }
+            else if (kodeRegion.ToLower() == "bpn")
+            {
+                connectionStrings = _connectionString4;
+            }
+
             // else if (kodeRegion == "PKU")
             // {
             //     connectionStrings = _connectionString;
@@ -81,7 +115,7 @@ namespace MPP.API.Repository
                 {
 
                     await connection.OpenAsync();
-                    using (var command = new SqlCommand("Get_Data_ApprovalMPP_Email_Detail", connection))
+                    using (var command = new SqlCommand("Get_Data_ApprovalMPP_Budget_Email_Detail", connection)) //Get_Data_ApprovalMPP_Email_Detail
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Company", company);
@@ -97,7 +131,7 @@ namespace MPP.API.Repository
                             {
                                 var item = new T_MsMPPDetail
                                 {
-                                    noPengajuan = reader.IsDBNull(reader.GetOrdinal("noPengajuan")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("noPengajuan")),
+                                    noPengajuan = reader.IsDBNull(reader.GetOrdinal("noPengajuan")) ? (Int64?)null : reader.GetInt64(reader.GetOrdinal("noPengajuan")),
                                     company = reader.IsDBNull(reader.GetOrdinal("company")) ? null : reader.GetString(reader.GetOrdinal("company")),
                                     location = reader.IsDBNull(reader.GetOrdinal("location")) ? null : reader.GetString(reader.GetOrdinal("location")),
                                     TahunPriode = reader.IsDBNull(reader.GetOrdinal("TahunPriode")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TahunPriode")),
@@ -105,6 +139,7 @@ namespace MPP.API.Repository
                                     BulanPriodeName = reader.IsDBNull(reader.GetOrdinal("BulanPriodeName")) ? null : reader.GetString(reader.GetOrdinal("BulanPriodeName")),
                                     state = reader.IsDBNull(reader.GetOrdinal("state")) ? null : reader.GetString(reader.GetOrdinal("state")),
                                     FinalState = reader.IsDBNull(reader.GetOrdinal("FinalState")) ? null : reader.GetString(reader.GetOrdinal("FinalState")),
+                               
                                 };
 
                                 result.Add(item);
@@ -125,6 +160,8 @@ namespace MPP.API.Repository
                     return result;
                 }
 
+                connection.Close();
+
             }
 
         }
@@ -134,12 +171,8 @@ namespace MPP.API.Repository
         {
 
             List<T_MsMPP> result = new List<T_MsMPP>();
-            string connectionStrings = string.Empty;
 
-            if (kodeRegion == "PKU")
-            {
-                connectionStrings = _connectionString;
-            }
+            string connectionStrings = getConnectionString(kodeRegion);
 
             using (var connection = new SqlConnection(connectionStrings))
             {
@@ -148,7 +181,7 @@ namespace MPP.API.Repository
                 {
 
                     await connection.OpenAsync();
-                    using (var command = new SqlCommand("Get_Data_ApprovalMPP_Email", connection))
+                    using (var command = new SqlCommand("Get_Data_Budget_Email_Detail", connection)) //Get_Data_ApprovalMPP_Email
                     {
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.AddWithValue("@Company", company);
@@ -165,7 +198,7 @@ namespace MPP.API.Repository
                                 var item = new T_MsMPP
                                 {
 
-                                    noPengajuan = reader.IsDBNull(reader.GetOrdinal("noPengajuan")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("noPengajuan")),
+                                    noPengajuan = reader.IsDBNull(reader.GetOrdinal("noPengajuan")) ? (Int64?)null : reader.GetInt64(reader.GetOrdinal("noPengajuan")),
                                     BusinessUnit = reader.IsDBNull(reader.GetOrdinal("BusinessUnit")) ? null : reader.GetString(reader.GetOrdinal("BusinessUnit")),
                                     totalCOO = reader.IsDBNull(reader.GetOrdinal("totalCOO")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("totalCOO")),
                                     totalBdgt = reader.IsDBNull(reader.GetOrdinal("totalBdgt")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("totalBdgt")),

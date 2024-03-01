@@ -9,5 +9,8 @@ namespace MPP.Service.Models
         public string? Description { get; set; }
         public string? RegionCode { get; set; }
         public string? KodeGroup { get; set; }
+
     }
 }
+
+

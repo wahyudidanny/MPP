@@ -3,6 +3,7 @@ using MPP.Service.Interface;
 using Microsoft.Extensions.Options;
 using Microsoft.Data.SqlClient;
 using Dapper;
+using Microsoft.VisualBasic;
 
 namespace MPP.Service.Services
 {
@@ -27,18 +28,32 @@ namespace MPP.Service.Services
             connectionString7 = connectionStrings.Value.DbConnectionString7;
         }
 
+        public IEnumerable<RegionCodeDistinct> GetDataRegionDistinct(IEnumerable<T_MsBusinessUnit> dataMsBusinessUnit){
+
+           var distinctRegionModels = dataMsBusinessUnit
+                .Where(x => x.RegionCode != null) 
+                .GroupBy(x => x.RegionCode)
+                .Select(g => g.First()) // Take the first element of each group
+                .Select(x => new RegionCodeDistinct { RegionCode = x.RegionCode })
+                .ToList();
+
+             return distinctRegionModels;
+         
+        }
+
+     
         public IEnumerable<T_MsBusinessUnit> GetDataBusinessUnit()
         {
             List<T_MsBusinessUnit> result = new List<T_MsBusinessUnit>();
 
-            // using (var connection = new SqlConnection(connectionString1))
-            // {
-            //     var data = connection.Query<T_MsBusinessUnit>("select Company,Location,Description,'PTK' RegionCode, 'FR' KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'PTK' and KodeGroup = 'FR'");
-            //     if (data.Count() > 0)
-            //     {
-            //         result.AddRange(data);
-            //     }
-            // }
+            using (var connection = new SqlConnection(connectionString1))
+            {
+                var data = connection.Query<T_MsBusinessUnit>("select Company,Location,Description,'PTK' RegionCode, 'FR' KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'PTK' and KodeGroup = 'FR'");
+                if (data.Count() > 0)
+                {
+                    result.AddRange(data);
+                }
+            }
 
             // using (var connection = new SqlConnection(connectionString2))
             // {
@@ -61,17 +76,17 @@ namespace MPP.Service.Services
             //     }
             // }
 
-            // using (var connection = new SqlConnection(connectionString4))
-            // {
-            //     string query = @"
-            //         select Company,Location,Description, RegionCode, KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'BPN' and KodeGroup = 'FR'
-            //         and Company+Location not in ('C1221','C1321','A1422')";
-            //     var data = connection.Query<T_MsBusinessUnit>(query);
-            //     if (data.Count() > 0)
-            //     {
-            //         result.AddRange(data);
-            //     }
-            // }
+            using (var connection = new SqlConnection(connectionString4))
+            {
+                string query = @"
+                    select Company,Location,Description, RegionCode, KodeGroup from T_MsBusinessUnit where Active = 1 and Location like '2%' and RegionCode = 'BPN' and KodeGroup = 'FR'
+                    and Company+Location not in ('C1221','C1321','A1422')";
+                var data = connection.Query<T_MsBusinessUnit>(query);
+                if (data.Count() > 0)
+                {
+                    result.AddRange(data);
+                }
+            }
 
             // using (var connection = new SqlConnection(connectionString5))
             // {

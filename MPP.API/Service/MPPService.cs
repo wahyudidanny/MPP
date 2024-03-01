@@ -10,13 +10,11 @@ namespace MPP.API.Service
     public class MPPService
     {
 
-        private static AppSettings? _appSettings;
         private readonly MPPRepository _MPPRepository;
-        public MPPService(MPPRepository MPPRepository, IOptions<AppSettings> appSettings)
+        
+        public MPPService(MPPRepository MPPRepository)
         {
             _MPPRepository = MPPRepository;
-            _appSettings = appSettings.Value;
-
         }
 
         public async Task<bool?> generateApprovalMPP(string company, string location, string kodeRegion, string tahun, string bulan)
@@ -27,11 +25,14 @@ namespace MPP.API.Service
                 var document = new PdfDocument();
 
                 var contentPdf = await _MPPRepository.getAllDataApprovalMPP(company, location,kodeRegion, tahun, bulan);
-                var contentPdfDetail = await _MPPRepository.getAllDataDetailApprovalMPP(company, location,kodeRegion, tahun, bulan);
+              //  var contentPdfDetail = await _MPPRepository.getAllDataDetailApprovalMPP(company, location,kodeRegion, tahun, bulan);
+                var filePathRegionCode = _MPPRepository.getFilePathRegionCode(kodeRegion);
 
-                if (contentPdf.Count() > 0 || contentPdfDetail.Count() > 0)
+                string msBusinessName = contentPdf.FirstOrDefault().BusinessUnit.ToString();
+
+                if (contentPdf.Count() > 0)
                 {
-                    string htmlcontent = SetTableMPP(contentPdf, contentPdfDetail, kodeRegion);
+                    string htmlcontent = SetTableMPP(contentPdf, kodeRegion);
 
                     PdfGenerator.AddPdfPages(document, htmlcontent, PageSize.A4);
 
@@ -39,11 +40,10 @@ namespace MPP.API.Service
                     {
 
                         document.Save(ms);
-                        var filename = "MPP_" + company + "_" + location + ".pdf";
+                        var filename = "MPP Over_PT_" + msBusinessName + ".pdf";
                         byte[] response = ms.ToArray();
-                        string fullPath = Path.Combine("C:\\AllProject\\Change Request\\2024\\MPP\\MPP.File\\PDF\\Riau", filename);
+                        string fullPath = Path.Combine(filePathRegionCode, filename);
                         File.WriteAllBytes(fullPath, response);
-
                     }
 
                     return true;
@@ -92,16 +92,14 @@ namespace MPP.API.Service
         public string setNormalColumTable(string valSpan, int height = 12, int colspan = 0, int rowspan = 0, string backgroundColor = "white", int width = 12)
         {
 
-            string results = "";
-
-            results = "<td style='padding: 0; margin: 0;border: 1px solid black;height: " + height.ToString() + "px;width=" + width.ToString() + "px; border-collapse: collapse;background-color:" + backgroundColor + ";'>" + valSpan + "</td>";
+            string results = "<td style='padding: 0; margin: 0;border: 1px solid black;height: " + height.ToString() + "px;width=" + width.ToString() + "px; border-collapse: collapse;background-color:" + backgroundColor + ";'>" + valSpan + "</td>";
 
             return results;
 
         }
 
 
-        private string SetTableMPP(IEnumerable<T_MsMPP?> contentPDF, IEnumerable<T_MsMPPDetail?> contentPDFDetail, string kodeRegion)
+        private string SetTableMPP(IEnumerable<T_MsMPP?> contentPDF, string kodeRegion)
         {
 
             string catatan = contentPDF.FirstOrDefault().catatan;
@@ -138,10 +136,12 @@ namespace MPP.API.Service
             bool createColumn = true;
 
 
-            foreach (var dataResponseDetail in contentPDFDetail)
-            {
+            // foreach (var dataResponseDetail in contentPDFDetail)
+            // {
 
-                string monthNameDetail = dataResponseDetail.BulanPriodeName;
+            //     string monthNameDetail = dataResponseDetail.BulanPriodeName;
+
+                string monthNameDetail = DateTime.Now.ToString("MMMM");;
 
                 foreach (var dataResponse in contentPDF)
                 {
@@ -179,7 +179,7 @@ namespace MPP.API.Service
                     htmlcontent += "</tr>";
 
                 }
-            }
+            //}
 
             htmlcontent += "<tr>";
             htmlcontent += setColumTable(setSpanValue("Catatan"), colspan: 2);
@@ -190,7 +190,7 @@ namespace MPP.API.Service
             htmlcontent += "</div>";
 
             htmlcontent += "<br>";
-            htmlcontent += setSpanValue("Harap segera melakukan approve email man power planning", bold: "bold") + "<br>";
+            htmlcontent += setSpanValue("Segera melakukan pengajuan kelebihan tenaga kerja melalui PIMS", bold: "bold") + "<br>";
 
             return htmlcontent;
 

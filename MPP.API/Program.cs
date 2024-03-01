@@ -1,6 +1,7 @@
 using MPP.API.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.RegisterService();
 builder.RegisterRepository();

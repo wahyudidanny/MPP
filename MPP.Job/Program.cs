@@ -6,8 +6,8 @@ using MPP.Service.Interface;
 using OpenQA.Selenium.Chrome;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 using RestSharp;
+
 public class Program
 {
 
@@ -37,7 +37,7 @@ public class Program
         var monthGenerate = DateTime.Now.Month.ToString();
 
         var msBusinessUnit = _businessUnitService?.GetDataBusinessUnit().ToList() ?? new List<T_MsBusinessUnit>();
-        
+        var distinctRegionCode = _businessUnitService?.GetDataRegionDistinct(msBusinessUnit).ToList();
 
         if (msBusinessUnit.Count() > 0)
         {
@@ -45,6 +45,21 @@ public class Program
             if (appSettings.GetValue("flagGeneratePDF") == "1")
             {
 
+                foreach (var data in distinctRegionCode)
+                {
+                   string groupFilePath = getFilePath(data.RegionCode.ToString());
+                    if(string.IsNullOrEmpty(groupFilePath)) continue;
+
+                    string[] files = Directory.GetFiles(groupFilePath);
+
+                    foreach (string file in files)
+                    {
+                        File.Delete(file);
+                        Console.WriteLine($"Deleted file: {file}");
+                    }
+
+                }                
+         
                 foreach (var data in msBusinessUnit)
                 {
                     try
@@ -62,16 +77,18 @@ public class Program
 
             }
 
-        }else{
+        }
+        else
+        {
 
-                Console.WriteLine("Data business unit is empty, please check your script");
+            Console.WriteLine("Data business unit is empty, please check your script");
 
         }
 
 
         if (appSettings.GetValue("flagSendWA") == "1")
         {
-            await openChromeWhatsap();
+            await openChromeWhatsap(distinctRegionCode);
 
         }
 
@@ -83,7 +100,7 @@ public class Program
     {
 
         try
-            {
+        {
             string apiUrl = $"{settingWAChrome.apiBaseUrl}/api/MPP/GenerateApprovalMPP/?company={company}&location={location}&kodeRegion={kodeRegion}&tahun={tahun}&bulan={bulan}";
 
             using (HttpClient client = new HttpClient())
@@ -109,14 +126,13 @@ public class Program
 
     }
 
-    private static async Task openChromeWhatsap()
+    private static async Task openChromeWhatsap(List<RegionCodeDistinct> distinctRegionModels)
     {
 
         string ChromeUserData = settingWAChrome.chromeUserData;
 
         var options = new ChromeOptions();
         options.AddArgument(ChromeUserData);
-
 
         using (IWebDriver driver = new ChromeDriver(settingWAChrome.chromeDriverPath, options))
         {
@@ -125,7 +141,7 @@ public class Program
                 driver.Navigate().GoToUrl("https://web.whatsapp.com/");
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMinutes(60);
                 Thread.Sleep(3000);
-                SendToWA(driver);
+                SendToWA(driver, distinctRegionModels);
                 driver.Quit();
 
             }
@@ -141,30 +157,78 @@ public class Program
 
 
 
-    static void SendToWA(IWebDriver driver)
+    static void SendToWA(IWebDriver driver, List<RegionCodeDistinct> distinctRegionModels)
     {
 
-        IWebElement searchBox = driver.FindElement(By.XPath(settingWAChrome.waSearchBox));
-        searchBox.SendKeys(settingWAChrome.waRecipientGroup);
 
-        Thread.Sleep(3000);
-
-        driver.FindElement(By.XPath(string.Format(settingWAChrome.waSelectSearchResult ?? "", "VRA"))).Click();
-
-        string[] files = Directory.GetFiles(appSettings.GetValue("filePathRiau"));
-
-        foreach (string file in files)
+        foreach (var val in distinctRegionModels)
         {
-            IWebElement attachmentButton = driver.FindElement(By.CssSelector(settingWAChrome.waAttachmentButton));
-            attachmentButton.Click();
+            string groupWAGName = getGroupSensus(val.RegionCode.ToString());
+            if(string.IsNullOrEmpty(groupWAGName)) continue;
+            
+            IWebElement searchBox = driver.FindElement(By.XPath(settingWAChrome.waSearchBox));
+
+
+            searchBox.SendKeys(groupWAGName);
+
             Thread.Sleep(5000);
-            IWebElement fileInput = driver.FindElement(By.CssSelector(settingWAChrome.waInputFileDefault));
-            fileInput.SendKeys(file);
-            driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessageImage)).SendKeys(Keys.Enter);
-            Thread.Sleep(5000);
+            string searchResultEl = string.Format(settingWAChrome.waSelectSearchResult, groupWAGName);
+            driver.FindElement(By.XPath(searchResultEl)).Click();
+
+            string[] files = Directory.GetFiles(getFilePath(val.RegionCode.ToString()));
+
+
+            driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys("In a few minutes you will recieved auto notification from *WhatsApp Automation System*"); //--> Element text message value
+            driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys(Keys.Enter);
+            Thread.Sleep(3000);
+
+
+            foreach (string file in files)
+            {
+                IWebElement attachmentButton = driver.FindElement(By.CssSelector(settingWAChrome.waAttachmentButton));
+                attachmentButton.Click();
+                Thread.Sleep(5000);
+                IWebElement fileInput = driver.FindElement(By.CssSelector(settingWAChrome.waInputFileDefault));
+                fileInput.SendKeys(file);
+                driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessageImage)).SendKeys(Keys.Enter);
+                Thread.Sleep(5000);
+            }
+
+            driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys("Thankyou *WhatsApp Automation System*"); //--> Element text message value
+            driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys(Keys.Enter);
+
         }
 
-
     }
+
+    public static string getFilePath(string kodeRegion)
+    {
+        string pathFile = string.Empty;
+
+        if (kodeRegion.ToLower() == "pku")
+            pathFile = appSettings.GetValue("filePathRiau");
+        else if (kodeRegion.ToLower() == "ptk")
+            pathFile = appSettings.GetValue("filePathKalbar");
+        else if (kodeRegion.ToLower() == "bpn")
+            pathFile = appSettings.GetValue("filePathKaltimFR");
+
+        return pathFile;
+    }
+
+
+    public static string getGroupSensus(string kodeRegion)
+    {
+        string groupSensus = string.Empty;
+
+        if (kodeRegion.ToLower() == "pku") // pku
+            groupSensus = appSettings.GetValue("waReceiptGroupRiauFR");
+        else if (kodeRegion.ToLower() == "ptk") //kalbar
+            groupSensus = appSettings.GetValue("waReceiptGroupKalbarFR");
+        else if (kodeRegion.ToLower() == "bpn") // kaltim fr
+            groupSensus = appSettings.GetValue("waReceiptGroupKaltimFR");
+
+        return groupSensus;
+    }
+
 
 }
