@@ -47,8 +47,8 @@ public class Program
 
                 foreach (var data in distinctRegionCode)
                 {
-                   string groupFilePath = getFilePath(data.RegionCode.ToString());
-                    if(string.IsNullOrEmpty(groupFilePath)) continue;
+                    string groupFilePath = getFilePath(data.RegionCode.ToString());
+                    if (string.IsNullOrEmpty(groupFilePath)) continue;
 
                     string[] files = Directory.GetFiles(groupFilePath);
 
@@ -58,8 +58,8 @@ public class Program
                         Console.WriteLine($"Deleted file: {file}");
                     }
 
-                }                
-         
+                }
+
                 foreach (var data in msBusinessUnit)
                 {
                     try
@@ -164,38 +164,41 @@ public class Program
         foreach (var val in distinctRegionModels)
         {
             string groupWAGName = getGroupSensus(val.RegionCode.ToString());
-            if(string.IsNullOrEmpty(groupWAGName)) continue;
             
-            IWebElement searchBox = driver.FindElement(By.XPath(settingWAChrome.waSearchBox));
-
-
-            searchBox.SendKeys(groupWAGName);
-
-            Thread.Sleep(5000);
-            string searchResultEl = string.Format(settingWAChrome.waSelectSearchResult, groupWAGName);
-            driver.FindElement(By.XPath(searchResultEl)).Click();
+            if (string.IsNullOrEmpty(groupWAGName)) continue;
 
             string[] files = Directory.GetFiles(getFilePath(val.RegionCode.ToString()));
 
-
-            driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys("In a few minutes you will recieved auto notification from *WhatsApp Automation System*"); //--> Element text message value
-            driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys(Keys.Enter);
-            Thread.Sleep(3000);
-
-
-            foreach (string file in files)
+            if (files.Count() > 0)
             {
-                IWebElement attachmentButton = driver.FindElement(By.CssSelector(settingWAChrome.waAttachmentButton));
-                attachmentButton.Click();
-                Thread.Sleep(5000);
-                IWebElement fileInput = driver.FindElement(By.CssSelector(settingWAChrome.waInputFileDefault));
-                fileInput.SendKeys(file);
-                driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessageImage)).SendKeys(Keys.Enter);
-                Thread.Sleep(5000);
-            }
+                IWebElement searchBox = driver.FindElement(By.XPath(settingWAChrome.waSearchBox));
 
-            driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys("Thankyou *WhatsApp Automation System*"); //--> Element text message value
-            driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys(Keys.Enter);
+                searchBox.SendKeys(groupWAGName);
+
+                Thread.Sleep(5000);
+                string searchResultEl = string.Format(settingWAChrome.waSelectSearchResult, groupWAGName);
+                driver.FindElement(By.XPath(searchResultEl)).Click();
+                driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys("In a few minutes you will recieved auto notification from *WhatsApp Automation System*"); //--> Element text message value
+                driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys(Keys.Enter);
+                Thread.Sleep(3000);
+
+                foreach (string file in files)
+                {
+                    IWebElement attachmentButton = driver.FindElement(By.CssSelector(settingWAChrome.waAttachmentButton));
+                    attachmentButton.Click();
+                    Thread.Sleep(5000);
+                    IWebElement fileInput = driver.FindElement(By.CssSelector(settingWAChrome.waInputFileDefault));
+                    fileInput.SendKeys(file);
+                    driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessageImage)).SendKeys(Keys.Enter);
+                    Thread.Sleep(5000);
+                }
+
+                driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys("Thankyou *WhatsApp Automation System*"); //--> Element text message value
+                driver.FindElement(By.XPath(settingWAChrome.waTextBoxMessage)).SendKeys(Keys.Enter);
+
+                Thread.Sleep(5000);
+
+            }
 
         }
 
