@@ -2,6 +2,7 @@
 using OpenQA.Selenium;
 using MPP.Service.Models;
 using MPP.Service.Setup;
+using System.Diagnostics;
 using MPP.Service.Interface;
 using OpenQA.Selenium.Chrome;
 using Microsoft.Extensions.Configuration;
@@ -48,6 +49,7 @@ public class Program
                 foreach (var data in distinctRegionCode)
                 {
                     string groupFilePath = getFilePath(data.RegionCode.ToString());
+
                     if (string.IsNullOrEmpty(groupFilePath)) continue;
 
                     string[] files = Directory.GetFiles(groupFilePath);
@@ -129,6 +131,14 @@ public class Program
     private static async Task openChromeWhatsap(List<RegionCodeDistinct> distinctRegionModels)
     {
 
+        Process[] processes = Process.GetProcessesByName("chrome");
+
+        foreach (Process process in processes)
+        {
+            process.Kill();
+            Console.WriteLine($"Terminated process {process.Id}");
+        }
+
         string ChromeUserData = settingWAChrome.chromeUserData;
 
         var options = new ChromeOptions();
@@ -140,7 +150,7 @@ public class Program
             {
                 driver.Navigate().GoToUrl("https://web.whatsapp.com/");
                 driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMinutes(60);
-                Thread.Sleep(3000);
+                Thread.Sleep(10000);
                 SendToWA(driver, distinctRegionModels);
                 driver.Quit();
 
@@ -151,6 +161,7 @@ public class Program
                 Console.WriteLine(ex.ToString());
 
             }
+
         }
 
     }
